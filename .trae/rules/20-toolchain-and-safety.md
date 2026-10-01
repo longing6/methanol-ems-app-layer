@@ -7,9 +7,11 @@ description: 工具链调用方式、数据保密与安全约束
 
 ## 执行方式
 
-- MATLAB 相关任务一律通过命令行批处理方式调用，例如：
+- MATLAB 相关任务**优先通过已接入的 MATLAB MCP Server 调用**，工具清单与使用边界见 `10-modeling-conventions.md` 的「Simulink MCP 工具使用边界」。
+- 无 MCP 通道时，退回命令行批处理方式：
   - `matlab -batch "cd('<项目根>'); <脚本名>"`
 - 涉及 Simulink 编译、C 代码生成、SIL/PIL 的步骤**必须在本机（装有 MATLAB 授权的工作站）执行**。云端沙箱不具备 MATLAB/Simulink 环境，不要在云端尝试安装或运行。
+- MCP Server 必须以 `--disable-telemetry=true` 启动。若发现遥测被开启，先停下并提示，不要在本项目模型与标定数据上继续调用。
 - 在执行耗时较长的建模/代码生成前，先说明将执行什么、预计产生哪些文件，再执行。
 
 ## 数据保密

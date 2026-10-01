@@ -7,7 +7,7 @@ description: Simulink 建模的命名/分层规范，以及模型文件的修改
 
 ## 硬性约束（不可违背）
 
-1. **禁止用文本编辑器直接修改 `.slx` / `.mdl`**。模型是二进制文件，直接改会损坏。所有模型变更必须以**可执行的 MATLAB 脚本**形式交付（`add_block` / `add_line` / `set_param` / `Simulink.BlockDiagram.*` 等），由人在本地 Simulink 环境中执行。
+1. **禁止用文本编辑器直接修改 `.slx` / `.mdl`**。模型是二进制文件，直接改会损坏。所有模型变更必须以**可执行的 MATLAB 脚本**形式交付（`add_block` / `add_line` / `set_param` / `Simulink.BlockDiagram.*` 等），由人在本地 Simulink 环境中执行。此约束同样适用于通过 MCP 工具发起的变更，详见下文「Simulink MCP 工具使用边界」。
 2. **禁止虚构**信号名、标定量名、接口名、模块名、需求 ID。每一个都必须能在《需求规范》或《数据清单》中找到出处；无法找到时必须停下并提问。
 3. **信息缺失时**输出 `【待确认：<需要确认的内容>】`，不得用"通常做法"自行补全阈值、量纲、采样周期或标定默认值。
 4. **不得修改 `calibration/` 下的标定数据**，除非任务明确要求，且改动需逐条列出 before/after。
@@ -37,3 +37,22 @@ description: Simulink 建模的命名/分层规范，以及模型文件的修改
 3. 可执行 MATLAB 脚本（完整、可直接粘贴运行）
 4. 受影响的信号与标定量
 5. 未确认项与风险
+
+## Simulink MCP 工具使用边界
+
+本项目已接入官方 MATLAB MCP Server（MATLAB R2026a + Simulink）。可用工具分两组：
+
+- **MATLAB 基础**：`detect_matlab_toolboxes`、`check_matlab_code`、`evaluate_matlab_code`、`run_matlab_file`、`run_matlab_test_file`
+- **Simulink 扩展**（需 `--extension-file` 加载）：`model_overview`、`model_read`、`model_edit`、`model_check`、`model_read_diagnostics`、`model_test`、`model_query_params`、`model_resolve_params`
+
+使用规则：
+
+1. **只读工具可直接使用**：`model_overview`、`model_read`、`model_check`、`model_read_diagnostics`、`model_query_params`、`model_resolve_params`、`check_matlab_code`、`detect_matlab_toolboxes` 不改变模型与工作区状态。
+2. **`model_edit` 是写操作，受「硬性约束 1」管辖**。调用前必须依次完成：
+   1. 列出将要修改的块、子系统、连线的明确清单；
+   2. 说明回退方式（模型是否已提交、是否需要先另存副本）；
+   3. 取得人工确认；
+   4. 修改后立刻用 `model_check` 与 `model_read_diagnostics` 自检，并输出自检结果。
+3. **`evaluate_matlab_code` 与 `run_matlab_file` 会真实执行代码**。当代码涉及删除、覆盖、`save_system`、`slbuild` 等有副作用的调用时，同样走第 2 条的确认流程。
+4. **`model_test` 需要 Simulink Test 许可证**，未确认安装前不得调用；MATLAB 侧单元测试改用 `run_matlab_test_file`。
+5. 通过 MCP 工具产生的任何模型变更，仍须按上文「变更交付格式」补一份可重现的 MATLAB 脚本记录，保证他人可重放。

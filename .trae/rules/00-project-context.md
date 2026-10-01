@@ -21,14 +21,17 @@ description: 2.0L 增程式甲醇发动机 EMS 应用层模型项目的基础上
 
 当三份材料之间出现冲突，或材料中未定义某项内容时，必须显式标注冲突或缺口，不得自行取舍或补全。
 
-## 工具链（待确认，首次协作前请补齐）
+## 工具链
 
-- MATLAB / Simulink 版本：
-- Stateflow / Embedded Coder / Simulink Test / Fixed-Point Designer：
-- 目标 MCU 与编译器：
-- 是否 AUTOSAR（若是，AUTOSAR 版本与 RTE 约定）：
+- MATLAB / Simulink 版本：**MATLAB R2026a**（已确认）
+- 运行平台：**Windows**
+- MCP：已接入官方 MATLAB MCP Server（本地 stdio），配置见 `.trae/mcp.json`
+- Simulink 技能组：已注册 `model-based-design-core`、`verification-validation-and-test`、`code-generation`
+- Stateflow / Embedded Coder / Simulink Test / Fixed-Point Designer：【待确认：已安装哪些工具箱】
+- 目标 MCU 与编译器：【待确认】
+- 是否 AUTOSAR（若是，AUTOSAR 版本与 RTE 约定）：【待确认】
 
-在以上信息补齐之前，涉及版本差异、代码生成选项、定浮点策略的问题一律先提问，不得假设。
+以上「待确认」项在补齐之前，涉及版本差异、代码生成选项、定浮点策略的问题一律先提问，不得假设。
 
 ## 目录约定
 
