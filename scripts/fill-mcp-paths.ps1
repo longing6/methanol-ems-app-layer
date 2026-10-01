@@ -16,6 +16,10 @@
 说明：
   本脚本不做字符串替换，而是直接按 JSON 结构重建 args 数组，
   因此不存在「占位符替换不完整」或转义错误的风险。
+
+  写入成功后会自动执行 git update-index --skip-worktree .trae/mcp.json，
+  让本机填好的绝对路径不再出现在 git status 中，避免误提交。
+  如需还原：git update-index --no-skip-worktree .trae/mcp.json
 #>
 
 [CmdletBinding()]
@@ -75,3 +79,30 @@ if ($remain) {
 }
 
 Write-Host "校验通过: 无残留占位符，JSON 合法。"
+
+# 让本机填好的 mcp.json 不再出现在 git status 中，避免把绝对路径误提交
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    Write-Host "提示: 未检测到 git，跳过 skip-worktree（可稍后手动执行）。"
+}
+else {
+    $inRepo = (git -C $ProjectRoot rev-parse --is-inside-work-tree 2>$null)
+    if ($LASTEXITCODE -ne 0 -or "$inRepo".Trim() -ne "true") {
+        Write-Host "提示: $ProjectRoot 不是 git 工作区，跳过 skip-worktree。"
+    }
+    else {
+        git -C $ProjectRoot ls-files --error-unmatch ".trae/mcp.json" 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "提示: .trae/mcp.json 未被 git 跟踪，跳过 skip-worktree。"
+        }
+        else {
+            git -C $ProjectRoot update-index --skip-worktree ".trae/mcp.json" 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "已将 .trae/mcp.json 设为 skip-worktree，本地改动不再出现在 git status。"
+                Write-Host "如需还原: git update-index --no-skip-worktree .trae/mcp.json"
+            }
+            else {
+                Write-Warning "skip-worktree 设置失败，请手动执行: git update-index --skip-worktree .trae/mcp.json"
+            }
+        }
+    }
+}
