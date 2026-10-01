@@ -1,0 +1,48 @@
+# ===== Simulink / MATLAB 代码生成产物 =====
+slprj/
+codegen/
+*_ert_rtw/
+*_grt_rtw/
+*_shrb_rtw/
+*.slxc
+*.rtw
+*.mk
+*_rtw/
+
+# ===== Simulink 自动保存与临时文件 =====
+*.slx.autosave
+*.autosave
+*.slx.r20*
+*.mdl.r20*
+*.slmx
+*.asv
+*.mex*
+*.mexa64
+*.mexw64
+*.o
+*.obj
+
+# ===== 缓存与日志 =====
+*.log
+*.tmp
+.cache/
+
+# ===== 编辑器 / 系统 =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+
+# ===== 协作工具临时文件 =====
+.uploads/
+.placeholder
+
+# ===== 说明 =====
+# 1. .slx / .mdl 模型二进制需要纳入版本管理，不要忽略；
+#    但由于是二进制，无法 diff/merge，请务必串行修改，禁用工作树并行改模型。
+# 2. calibration/ 下的标定数据（.a2l/.dcm/标定表）建议使用 Git LFS，
+#    或按公司保密要求放在受控的独立仓库中，不要混在模型仓库里。
+# 3. 若需要使用 Git LFS 管理模型，请追加：
+#    *.slx filter=lfs diff=lfs merge=lfs -text
